@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
         - name: my-container-fe
-          image: smile1101/nginx:e4475b25543791994b2c8159dd62cb1d61b4e84f
+          image: smile1101/nginx:4bb409069942977a56fc7abe7c9fb7157f7faa66
           ports:
             - containerPort: 80
 
@@ -63,7 +63,7 @@ spec:
     spec:
       containers:
         - name: my-container-be
-          image: smile1101/fastapi:8c5dec2080b227908579367327e613cf93897f39
+          image: smile1101/fastapi:4bb409069942977a56fc7abe7c9fb7157f7faa66
           ports:
             - containerPort: 8000
 
