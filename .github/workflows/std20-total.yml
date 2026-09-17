@@ -34,7 +34,7 @@ jobs:
       - name: Nginx Docker 이미지 빌드 및 푸시
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./app/web/nginx
           file: ./app/web/nginx/Dockerfile
           push: true
           #(중요) 이미지명 정의(태그 자동 완성)
@@ -46,7 +46,7 @@ jobs:
       - name: FastAPI Docker 이미지 빌드 및 푸시
         uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./app/web/fastapi
           file: ./app/web/fastapi/Dockerfile
           push: true
           #(중요) 이미지명 정의(태그 자동 완성)
