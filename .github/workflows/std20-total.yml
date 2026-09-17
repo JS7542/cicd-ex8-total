@@ -1,0 +1,65 @@
+name: GitOps ArgoCD CICD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+# 2. 작업 정의
+jobs:
+  build-and-update:
+    runs-on: ubuntu-latest                        # 실제 작업 주체
+    permissions:
+      contents: write                             # runs-on에 정의된 서버가 깃에 업로드 된 파일을 쓸 수 있는 권한(deployment.yaml의 image 태그를 업데이트 하기 위함.)
+    steps:
+      - name: 소스코드 체크아웃                     # 깃에 push 된 파일을 서버로 복사
+        uses: actions/checkout@v4
+
+
+# ======================================================
+# 1. Docker Hub Login
+#
+# Dockerfile의 FROM nginx 등이 Docker Hub에서
+# 이미지를 가져오는 경우 사용
+# ======================================================
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+# ======================================================
+# 2. Nginx Docker 이미지 빌드 및 푸시
+# ======================================================
+      - name: Nginx Docker 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .app/nginx/Dockerfile
+          push: true
+          #(중요) 이미지명 정의(태그 자동 완성)
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nginx:${{ github.sha }}
+
+# =====================================================
+# 2-1. FastAPI Docker 이미지 빌드 및 푸시
+# ======================================================
+      - name: FastAPI Docker 이미지 빌드 및 푸시
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: .app/fastapi/Dockerfile
+          push: true
+          #(중요) 이미지명 정의(태그 자동 완성)
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:${{ github.sha }}
+
+      - name: 쿠버네티스 파일의 이미지 태그 갱신 및 Git push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          sed -i "s|image: ${{ secrets.DOCKER_HUB_USERNAME }}/nginx:.*|image: ${{ secrets.DOCKER_HUB_USERNAME }}/nginx:${{ github.sha }}|g" ./k8s/std20-deployment.yaml
+          sed -i "s|image: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:.*|image: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:${{ github.sha }}|g" ./k8s/std20-deployment.yaml
+
+          git add ./k8s/std20-deployment.yaml
+          git commit -m "Update nginx and fastapi image tags to ${{ github.sha }}"
+          git push
+

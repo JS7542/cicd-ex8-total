@@ -304,6 +304,12 @@ resource "aws_security_group" "std20_eks_node_sg" {
     protocol        = "tcp"
     security_groups = [aws_security_group.std20_eks_cluster_sg.id]
   }
+  ingress {
+    from_port       = 9443
+    to_port         = 9443
+    protocol        = "tcp"
+    security_groups = [aws_security_group.std20_eks_cluster_sg.id]
+  }
 
   ingress {
     from_port = 0
