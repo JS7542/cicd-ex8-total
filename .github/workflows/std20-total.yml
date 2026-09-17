@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: .app/nginx/Dockerfile
+          file: .app/web/nginx/Dockerfile
           push: true
           #(중요) 이미지명 정의(태그 자동 완성)
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nginx:${{ github.sha }}
@@ -47,7 +47,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: .app/fastapi/Dockerfile
+          file: .app/web/fastapi/Dockerfile
           push: true
           #(중요) 이미지명 정의(태그 자동 완성)
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/fastapi:${{ github.sha }}
