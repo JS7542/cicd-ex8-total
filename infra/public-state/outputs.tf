@@ -10,21 +10,21 @@ output "terraform_state_bucket" {
   value = data.aws_s3_bucket.terraform_state.bucket
 }
 
-  # output "static_web_bucket" {
-  #   value = module.storage.static_web_bucket
-  # }
+  output "static_web_bucket" {
+    value = module.storage.static_web_bucket
+  }
 
-  # output "static_web_website_endpoint" {
-  #   value = module.storage.static_web_website_endpoint
-  # }
+  output "static_web_website_endpoint" {
+    value = module.storage.static_web_website_endpoint
+  }
 
-  # output "log_bucket" {
-  #   value = module.storage.log_bucket
-  # }
+  output "log_bucket" {
+    value = module.storage.log_bucket
+  }
 
-  # output "efs_id" {
-  #   value = module.storage.efs_id
-  # }
+  output "efs_id" {
+    value = module.storage.efs_id
+  }
 
 output "web_instance_private_ip" {
   value = module.compute.web_instance_private_ip

@@ -39,22 +39,22 @@ module "storage" {
   account_id                = data.aws_caller_identity.current.account_id
 }
 
-module "asg" {
-  source = "../resource/asg"
+# module "asg" {
+#   source = "../resource/asg"
 
-  tag_header         = local.tag_header
-  vpc_id             = module.network.vpc_id
-  internal_ssh_sg_id = module.security.internal_ssh_sg_id
-  external_alb_sg_id = module.security.external_alb_sg_id
-  web_sg_id          = module.security.web_sg_id
-  public_subnet_ids  = module.network.public_subnet_ids
-  private_subnet_ids = module.network.private_subnet_ids
-  ami_id             = data.aws_ami.ubuntu_2404.id
-  user_data          = local.web_user_data
-  key_name           = module.compute.key_name
-  instance_type      = var.asg_instance_type
-  scaling            = var.asg_scaling
-}
+#   tag_header         = local.tag_header
+#   vpc_id             = module.network.vpc_id
+#   internal_ssh_sg_id = module.security.internal_ssh_sg_id
+#   external_alb_sg_id = module.security.external_alb_sg_id
+#   web_sg_id          = module.security.web_sg_id
+#   public_subnet_ids  = module.network.public_subnet_ids
+#   private_subnet_ids = module.network.private_subnet_ids
+#   ami_id             = data.aws_ami.ubuntu_2404.id
+#   user_data          = local.web_user_data
+#   key_name           = module.compute.key_name
+#   instance_type      = var.asg_instance_type
+#   scaling            = var.asg_scaling
+# }
 
 module "eks" {
   source = "../resource/eks"
@@ -70,26 +70,26 @@ module "eks" {
   scaling            = var.eks_scaling
 }
 
-module "database" {
-  source = "../resource/database"
+# module "database" {
+#   source = "../resource/database"
 
-  tag_header         = local.tag_header
-  mysql_sg_id        = module.security.mysql_sg_id
-  private_subnet_ids = module.network.private_subnet_ids
-  db_name            = var.db_name
-  db_username        = var.db_username
-  engine_version     = var.database_engine_version
-  instance_class     = var.database_instance_class
-}
+#   tag_header         = local.tag_header
+#   mysql_sg_id        = module.security.mysql_sg_id
+#   private_subnet_ids = module.network.private_subnet_ids
+#   db_name            = var.db_name
+#   db_username        = var.db_username
+#   engine_version     = var.database_engine_version
+#   instance_class     = var.database_instance_class
+# }
 
-module "endpoints" {
-  source = "../resource/endpoints"
+# module "endpoints" {
+#   source = "../resource/endpoints"
 
-  tag_header         = local.tag_header
-  vpc_id             = module.network.vpc_id
-  endpoint_sg_id     = module.security.endpoint_sg_id
-  private_subnet_ids = module.network.private_subnet_ids
-  s3_route_table_ids = module.network.s3_route_table_ids
-  region             = var.region
-}
+#   tag_header         = local.tag_header
+#   vpc_id             = module.network.vpc_id
+#   endpoint_sg_id     = module.security.endpoint_sg_id
+#   private_subnet_ids = module.network.private_subnet_ids
+#   s3_route_table_ids = module.network.s3_route_table_ids
+#   region             = var.region
+# }
 

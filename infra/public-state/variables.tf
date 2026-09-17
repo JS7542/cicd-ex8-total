@@ -46,7 +46,7 @@ variable "subnet_cidr" {
 variable "ssh_public_key_path" {
   description = "WSL SSH public key path"
   type        = string
-  default     = "~/.ssh/id_rsa.pub"
+  default     = "std20-keypair"
 }
 
 variable "eks_version" {
