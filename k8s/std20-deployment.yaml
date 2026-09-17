@@ -1,76 +1,115 @@
-
+# ============================================================
+# Nginx Deployment
+# ============================================================
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: std20-nginx-deployment
+  name: my-deployment-fe
   namespace: default
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: std20-nginx-web
+      app: my-nginx-fe
   template:
     metadata:
       labels:
-        app: std20-nginx-web
+        app: my-nginx-fe
     spec:
       containers:
-      - name: std20-nginx-container
-        image: smile1101/nginx:8c5dec2080b227908579367327e613cf93897f39
-        ports:
-          - containerPort: 80
---- 
+        - name: my-container-fe
+          image: smile1101/nginx:e4475b25543791994b2c8159dd62cb1d61b4e84f
+          ports:
+            - containerPort: 80
 
+---
 
+# ============================================================
+# Nginx Service
+# ============================================================
 apiVersion: v1
 kind: Service
 metadata:
-  name: std20-nginx-service
+  name: my-service-fe
   namespace: default
 spec:
   type: ClusterIP
   selector:
-    app: std20-nginx-web
+    app: my-nginx-fe
   ports:
     - protocol: TCP
       port: 80
       targetPort: 80
 
+---
+
+# ============================================================
+# FastAPI Deployment
+# ============================================================
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment-be
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: my-fastapi-be
+  template:
+    metadata:
+      labels:
+        app: my-fastapi-be
+    spec:
+      containers:
+        - name: my-container-be
+          image: smile1101/fastapi:8c5dec2080b227908579367327e613cf93897f39
+          ports:
+            - containerPort: 8000
 
 ---
 
+# ============================================================
+# FastAPI Service
+# ============================================================
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-service-be
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: my-fastapi-be
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+
+---
+
+# ============================================================
+# ALB Ingress
+# ============================================================
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: std20-alb-basic-ex
+  name: my-alb-ingress
   namespace: default
-  annotations:    # 보안 그룹 등 AWS 에 대한 설정들
-    alb.ingress.kubernetes.io/scheme: internet-facing # 외부 로드 밸런서 (ip부여) / internal(사설)
-    alb.ingress.kubernetes.io/target-type: ip 
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
-    alb.ingress.kubernetes.io/transforms.std20-nginx-service: >
-      [
-        {
-          "type": "url-rewrite",
-          "urlRewriteConfig": {
-            "rewrites": [
-              {
-                "regex": "^\\/nginx\\/?(.*)$",
-                "replace": "/$1"
-              }
-            ]
-          }
-        }
-      ] 
+
 spec:
   ingressClassName: alb
   rules:
     - http:
         paths:
-          - path: /nginx
+          - path: /
             pathType: Prefix
             backend:
               service:
-                name: std20-nginx-service
+                name: my-service-fe
                 port:
                   number: 80
